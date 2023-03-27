@@ -8,9 +8,7 @@ import { ProductCategory } from '../common/product-category';
   providedIn: 'root'
 })
 export class ProductService {
-  searchProduct(keyword: string) {
-    throw new Error('Method not implemented.');
-  }
+
   private baseUrl = 'http://localhost:8080/api/products';
 
   private productCategoryUrl = 'http://localhost:8080/api/product-category';
@@ -47,6 +45,16 @@ export class ProductService {
 
   }
 
+  getProductDetail(id: number) {
+    const productDetailsUrl = `${this.baseUrl}/${id}`
+    return this.httpClient.get<Product>(productDetailsUrl).pipe(
+      map(response => {
+          console.log(response);
+          return response;
+      })
+    )
+  }
+
 }
 
 interface GetResponseProducts {
@@ -54,6 +62,7 @@ interface GetResponseProducts {
     products: Product[]
   }
 }
+
 interface GetResponseProductsCategory {
   _embedded: {
     productCategory: ProductCategory[]
