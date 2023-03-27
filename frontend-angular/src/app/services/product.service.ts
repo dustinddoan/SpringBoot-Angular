@@ -8,9 +8,13 @@ import { ProductCategory } from '../common/product-category';
   providedIn: 'root'
 })
 export class ProductService {
+  searchProduct(keyword: string) {
+    throw new Error('Method not implemented.');
+  }
   private baseUrl = 'http://localhost:8080/api/products';
 
   private productCategoryUrl = 'http://localhost:8080/api/product-category';
+
 
   constructor(private httpClient: HttpClient) { }
   // return an observable map the JSON data from Spring Data REST API to Pdoruct Array
@@ -18,7 +22,6 @@ export class ProductService {
 
     // need to build URL base on categoryId
     const searchUrl = `${this.baseUrl}/search/findByCategoryId?id=${categoryId}`
-    console.log('searchurl', searchUrl);
 
     return this.httpClient.get<GetResponseProducts>(searchUrl).pipe(
       map(response => response._embedded.products)
@@ -29,6 +32,19 @@ export class ProductService {
     return this.httpClient.get<GetResponseProductsCategory>(this.productCategoryUrl).pipe(
       map(response => response._embedded.productCategory)
     )
+  }
+
+  searchProducts(keyword: string) {
+    const searchProductUrl = `${this.baseUrl}/search/findByNameContaining?name=${keyword}`
+
+    // return this.httpClient.get<GetResponseProducts>(searchProductUrl).pipe(
+    //   map(response => response._embedded.products)
+    // )
+    return this.httpClient.get<GetResponseProducts>(searchProductUrl).pipe(
+      map(response => {
+        return response._embedded.products})
+    )
+
   }
 
 }

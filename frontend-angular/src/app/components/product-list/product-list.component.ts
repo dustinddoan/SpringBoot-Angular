@@ -16,6 +16,7 @@ export class ProductListComponent {
 
   products: Product[] = [];
   currentCategory: number = 1;
+  searchMode: boolean = false;
 
   ngOnInit() {
     this.route.paramMap.subscribe(() => {
@@ -23,6 +24,18 @@ export class ProductListComponent {
     });
   }
   listProducts() {
+    this.searchMode = this.route.snapshot.paramMap.has('keyword');
+
+    if (this.searchMode) {
+      this.handleSearchProducts()
+    } else {
+      this.handleListProducts();
+
+    }
+  }
+
+
+  handleListProducts() {
     const hasCatergoryId: boolean = this.route.snapshot.paramMap.has('id');
 
     if (hasCatergoryId) {
@@ -33,6 +46,14 @@ export class ProductListComponent {
 
 
     this.productService.getProductList(this.currentCategory).subscribe((data) => {
+      this.products = data;
+    });
+  }
+
+  handleSearchProducts() {
+    const keyword: string = this.route.snapshot.paramMap.get('keyword')!;
+
+    this.productService.searchProducts(keyword).subscribe(data => {
       this.products = data;
     });
   }
