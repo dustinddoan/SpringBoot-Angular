@@ -2,7 +2,9 @@ import { Component } from '@angular/core';
 import { Product } from 'src/app/common/product';
 import { ProductService } from 'src/app/services/product.service';
 import { ActivatedRoute } from '@angular/router';
-
+import { Output, EventEmitter } from '@angular/core';
+import { CartService } from 'src/app/services/cart.service';
+import { CartItem } from 'src/app/common/cart-item';
 @Component({
   selector: 'app-product-list',
   templateUrl: './product-list-grid.component.html',
@@ -11,8 +13,11 @@ import { ActivatedRoute } from '@angular/router';
 export class ProductListComponent {
   constructor(
     private productService: ProductService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cartService: CartService
   ) {}
+
+
 
   products: Product[] = [];
   currentCategory: number = 1;
@@ -57,4 +62,10 @@ export class ProductListComponent {
       this.products = data;
     });
   }
+
+  addProduct(product: Product) {
+    const cartItem = new CartItem(product);
+    this.cartService.addCartItemToCart(cartItem)
+  }
+
 }
