@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, ReplaySubject, Subject } from 'rxjs';
 import { CartItem } from '../common/cart-item';
 import { Product } from '../common/product';
 @Injectable({
@@ -18,10 +18,11 @@ export class CartService {
 
   // another approach:
   cartItems: CartItem[] = [];
-  totalPrice: Subject<number> = new Subject<number>();
-  totalQuantity: Subject<number> = new Subject<number>();
+  totalPrice: Subject<number> = new BehaviorSubject<number>(0);
+  totalQuantity: Subject<number> = new BehaviorSubject<number>(0);
 
   addCartItemToCart(item: CartItem) {
+    console.log('addCartItemToCart')
     let alreadyInCart: boolean = false;
     let existingCartItem: CartItem | undefined = undefined;
 
@@ -53,6 +54,25 @@ export class CartService {
 
     this.totalPrice.next(totalPrice);
     this.totalQuantity.next(totalQuantity);
+  }
+
+  itemsInCart(): CartItem[] {
+    return this.cartItems;
+  }
+
+  computeCartTotal() {
+    let totalPrice = 0;
+    let totalQuantity = 0;
+    if (this.cartItems.length > 0) {
+      for (let tempCartItem of this.cartItems) {
+        totalPrice += tempCartItem.unitPrice * tempCartItem.quantity;
+        totalQuantity += tempCartItem.quantity;
+      }
+      this.totalPrice.next(totalPrice);
+      this.totalQuantity.next(totalQuantity);
+    }
+
+
   }
 
 }

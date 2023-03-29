@@ -13,22 +13,26 @@ export class CartStatusComponent {
     private cartService: CartService
   ) { }
 
-  carts : Product[] = [];
-  totalAmount: number = 0;
-  product!: Product;
-  itemsInCart: number = 0;
+  // carts : Product[] = [];
+  // product!: Product;
+  // itemsInCart: number = 0;
+  // alreadyInCart: boolean = false;
+
   totalQuantity: number = 0;
-  alreadyInCart: boolean = false;
+  totalAmount: number = 0;
+
+
   ngOnInit() {
     this.updateCarts();
   }
   updateCarts() {
-    this.cartService.totalPrice.subscribe(data => {
-      this.totalAmount = data;
-    })
+    this.cartService.computeCartTotal();
 
     this.cartService.totalQuantity.subscribe(data => {
       this.totalQuantity = data;
+    })
+    this.cartService.totalPrice.subscribe(data => {
+      this.totalAmount = data;
     })
   }
 }
