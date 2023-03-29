@@ -2,13 +2,16 @@ package com.noobdev.springbootecommerce.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Set;
 
 @Entity
 @Table(name = "product_category")
 @Data
-
+@Getter
+@Setter
 public class ProductCategory {
 
     @Id

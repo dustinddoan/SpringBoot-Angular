@@ -13,7 +13,6 @@ import java.util.Set;
 
 @Entity
 @Table(name = "orders")
-@Data
 @Getter
 @Setter
 public class Order {
@@ -29,11 +28,8 @@ public class Order {
   @Column(name = "total_price")
   private Double totalPrice;
 
-
-
-
-
-
+  @Column(name = "total_quantity")
+  private Integer totalQuantity;
 
   @Column(name = "status")
   private String status;
@@ -65,9 +61,10 @@ public class Order {
   public void addOrderItem(OrderItem item) {
     if (item!= null) {
       if (orderItems == null) {
-        orderItems.add(item);
-        item.setOrder(this);
+        orderItems = new HashSet<>();
       }
+      orderItems.add(item);
+      item.setOrder(this);
     }
   }
 }
