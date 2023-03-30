@@ -32,7 +32,7 @@ export class CartStatusComponent {
       this.totalQuantity = data;
     })
     this.cartService.totalPrice.subscribe(data => {
-      this.totalAmount = data;
+      this.totalAmount = +data.toFixed(2);;
     })
   }
 }

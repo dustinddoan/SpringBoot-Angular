@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AuthModule } from '@auth0/auth0-angular';
 
 import { ProductListComponent } from './components/product-list/product-list.component';
 import {HttpClientModule} from '@angular/common/http';
@@ -15,8 +16,21 @@ import { CartStatusComponent } from './components/cart-status/cart-status.compon
 import { CartDetailsComponent } from './components/cart-details/cart-details.component';
 import { CheckOutComponent } from './components/check-out/check-out.component';
 import { CartService } from './services/cart.service';
+import { LoginComponent } from './components/login/login.component';
+import { AuthStatusComponent } from './components/auth-status/auth-status.component';
+
+import {
+  OktaAuthModule,
+  OktaCallbackComponent,
+  OKTA_CONFIG
+} from '@okta/okta-angular';
+
+import  {OktaAuth} from '@okta/okta-auth-js';
+import myAppConfig from './config/my-app-config';
 
 const routes: Routes = [
+  {path: 'login/callback', component: OktaCallbackComponent},
+  {path: 'login', component: LoginComponent},
   {path:'checkout', component: CheckOutComponent},
   {path: 'cart-details', component: CartDetailsComponent},
   {path: 'search/:keyword', component: ProductListComponent},
@@ -28,6 +42,9 @@ const routes: Routes = [
   {path: '**', redirectTo: '/products', pathMatch: 'full'}
 ]
 
+const oktaConfig = myAppConfig.oidc;
+const oktaAuth = new OktaAuth(oktaConfig);
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -38,16 +55,18 @@ const routes: Routes = [
     CartStatusComponent,
     CartDetailsComponent,
     CheckOutComponent,
+    LoginComponent,
+    AuthStatusComponent,
   ],
   imports: [
     RouterModule.forRoot(routes),
     BrowserModule,
     HttpClientModule,
     FormsModule,
-    ReactiveFormsModule
-
+    ReactiveFormsModule,
+    OktaAuthModule
   ],
-  providers: [ProductService, CartService],
+  providers: [ProductService, CartService, {provide: OKTA_CONFIG, useValue: {oktaAuth}}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
