@@ -3,26 +3,27 @@ import { BehaviorSubject, ReplaySubject, Subject } from 'rxjs';
 import { CartItem } from '../common/cart-item';
 import { Product } from '../common/product';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CartService {
-
-  constructor() { }
-
-  private productSource = new BehaviorSubject<Product|undefined>(undefined);
-  product = this.productSource.asObservable();
-
-  addProductToCart(product: Product) {
-    this.productSource.next(product);
-  }
-
   // another approach:
   cartItems: CartItem[] = [];
+  storage: Storage = sessionStorage;
+
   totalPrice: Subject<number> = new BehaviorSubject<number>(0);
   totalQuantity: Subject<number> = new BehaviorSubject<number>(0);
 
+  constructor() {
+    let data = JSON.parse(this.storage.getItem('cartItems')!);
+
+    if (data !== null) {
+      this.cartItems = data;
+      this.computeCartTotal();
+    }
+  }
+
   addCartItemToCart(item: CartItem) {
-    console.log('addCartItemToCart')
+    // console.log('addCartItemToCart')
     let alreadyInCart: boolean = false;
     let existingCartItem: CartItem | undefined = undefined;
 
@@ -33,13 +34,11 @@ export class CartService {
           break;
         }
       }
-      alreadyInCart = (existingCartItem !== undefined);
-
-
+      alreadyInCart = existingCartItem !== undefined;
     }
 
     if (alreadyInCart && existingCartItem?.quantity !== undefined) {
-      existingCartItem.quantity ++
+      existingCartItem.quantity++;
     } else {
       this.cartItems.push(item);
     }
@@ -54,25 +53,30 @@ export class CartService {
 
     this.totalPrice.next(totalPrice);
     this.totalQuantity.next(totalQuantity);
+
+    this.persistCartItems();
   }
 
   itemsInCart(): CartItem[] {
     return this.cartItems;
   }
 
+  persistCartItems() {
+    console.log('persistCartItems');
+    // console.log('persistCartItems' + JSON.stringify(this.cartItems));
+    this.storage.setItem('cartItems', JSON.stringify(this.cartItems));
+  }
+
   computeCartTotal() {
     let totalPrice = 0;
     let totalQuantity = 0;
-    if (this.cartItems.length > 0) {
-      for (let tempCartItem of this.cartItems) {
-        totalPrice += tempCartItem.unitPrice * tempCartItem.quantity;
-        totalQuantity += tempCartItem.quantity;
-      }
-      this.totalPrice.next(totalPrice);
-      this.totalQuantity.next(totalQuantity);
+    for (let tempCartItem of this.cartItems) {
+      totalPrice += tempCartItem.unitPrice * tempCartItem.quantity;
+      totalQuantity += tempCartItem.quantity;
     }
+    this.totalPrice.next(totalPrice);
+    this.totalQuantity.next(totalQuantity);
 
 
   }
-
 }

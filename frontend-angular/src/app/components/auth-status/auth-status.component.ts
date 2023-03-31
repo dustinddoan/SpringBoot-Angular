@@ -7,9 +7,18 @@ import { AuthService } from '@auth0/auth0-angular';
   styleUrls: ['./auth-status.component.css']
 })
 export class AuthStatusComponent {
-  constructor(public auth: AuthService) { }
+
   isAuthenticated: boolean = false;
   userFullName: string = '';
+  storage: Storage = sessionStorage;
+  constructor(public auth: AuthService) {
+    let isAuth = JSON.parse(this.storage.getItem('auth')!);
+    if (isAuth != null) {
+      this.isAuthenticated = isAuth;
+      this.getUserDetails();
+    }
+  }
+
 
   ngOnInit() {
     this.auth.isAuthenticated$.subscribe(result => {
@@ -24,6 +33,7 @@ export class AuthStatusComponent {
         console.log('user: ' + user?.name);
         this.userFullName = user?.name!;
 
+        this.storage.setItem('auth', JSON.stringify(this.isAuthenticated));
       })
 
     }
