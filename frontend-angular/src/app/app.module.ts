@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AuthModule } from '@auth0/auth0-angular';
+import { AuthModule, AuthGuard } from '@auth0/auth0-angular';
 
 import { ProductListComponent } from './components/product-list/product-list.component';
 import {HttpClientModule} from '@angular/common/http';
@@ -19,7 +19,9 @@ import { CartService } from './services/cart.service';
 import { LoginComponent } from './components/login/login.component';
 import { AuthStatusComponent } from './components/auth-status/auth-status.component';
 
+
 import {
+  OktaAuthGuard,
   OktaAuthModule,
   OktaCallbackComponent,
   OKTA_CONFIG
@@ -27,8 +29,18 @@ import {
 
 import  {OktaAuth} from '@okta/okta-auth-js';
 import myAppConfig from './config/my-app-config';
+import { MembersPageComponent } from './components/members-page/members-page.component';
+
+const authModuleConfig = {
+  domain: 'openmarket.us.auth0.com',
+  clientId: 'YU9vhZammk5U5I6l0FdCHLCo05JPFw0r',
+  authorizationParams: {
+    redirect_uri: window.location.origin,
+  }
+}
 
 const routes: Routes = [
+  {path: 'members', component: MembersPageComponent, canActivate: [AuthGuard]},
   {path: 'login/callback', component: OktaCallbackComponent},
   {path: 'login', component: LoginComponent},
   {path:'checkout', component: CheckOutComponent},
@@ -57,6 +69,7 @@ const oktaAuth = new OktaAuth(oktaConfig);
     CheckOutComponent,
     LoginComponent,
     AuthStatusComponent,
+    MembersPageComponent,
   ],
   imports: [
     RouterModule.forRoot(routes),
@@ -64,9 +77,14 @@ const oktaAuth = new OktaAuth(oktaConfig);
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    OktaAuthModule
+    OktaAuthModule,
+    AuthModule.forRoot(authModuleConfig)
   ],
   providers: [ProductService, CartService, {provide: OKTA_CONFIG, useValue: {oktaAuth}}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+
+// openmarket.us.auth0.com
+
