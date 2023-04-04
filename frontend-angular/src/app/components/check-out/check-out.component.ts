@@ -23,13 +23,17 @@ export class CheckOutComponent {
   cartItems: CartItem[] = [];
   totalAmount: number = 0;
   totalQuantity: number = 0;
+  userEmail: string = '';
+  storage: Storage = sessionStorage;
 
   ngOnInit() {
+    const userEmail = JSON.parse(this.storage.getItem('email')!);
+
     this.checkoutFormGroup = this.formBuilder.group({
       customer: this.formBuilder.group({
         firstName: [''],
         lastName: [''],
-        email: ['', [Validators.required, Validators.email]]
+        email: [userEmail, [Validators.required, Validators.email]]
       }),
       address: this.formBuilder.group({
         street: [''],
@@ -123,7 +127,8 @@ export class CheckOutComponent {
 
   }
   resetCart() {
-    this.cartService.cartItems = []
+    this.storage.removeItem('cartItems')
+    this.cartService.cartItems = [];
     this.cartService.totalPrice.next(0);
     this.cartService.totalQuantity.next(0);
   }

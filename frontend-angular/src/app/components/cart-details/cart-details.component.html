@@ -7,7 +7,7 @@
           <th width="50%">Product Detail</th>
           <th width="30%"></th>
         </tr>
-        <tr *ngFor="let item of cartItems">
+        <tr *ngFor="let item of cartItems; index as i">
           <td>
             <img
               src="/{{item.imageUrl}}"
@@ -31,7 +31,7 @@
               </select>
             </div>
             <p>Sub-total {{item.quantity*item.unitPrice | currency: 'USD'}}</p>
-            <button class="btn btn-danger">Remove</button>
+            <button class="btn btn-primary btn-sm" (click)="removeFromCart(item,i)" >Remove</button>
           </td>
         </tr>
         <tr>

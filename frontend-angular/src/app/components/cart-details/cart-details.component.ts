@@ -32,4 +32,10 @@ export class CartDetailsComponent {
 
     this.cartService.computeCartTotal();
   }
+
+  removeFromCart(item: CartItem, index: number) {
+    console.log(item, index);
+    let updateCarts: CartItem[] = this.cartItems.slice(index, 1);
+    this.calculateTotal();
+  }
 }

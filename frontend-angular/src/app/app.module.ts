@@ -30,6 +30,7 @@ import {
 import  {OktaAuth} from '@okta/okta-auth-js';
 import myAppConfig from './config/my-app-config';
 import { MembersPageComponent } from './components/members-page/members-page.component';
+import { OrderHistoryComponent } from './components/order-history/order-history.component';
 
 const authModuleConfig = {
   domain: 'openmarket.us.auth0.com',
@@ -40,6 +41,7 @@ const authModuleConfig = {
 }
 
 const routes: Routes = [
+  {path: 'order-history', component: OrderHistoryComponent, canActivate: [AuthGuard]},
   {path: 'members', component: MembersPageComponent, canActivate: [AuthGuard]},
   {path: 'login/callback', component: OktaCallbackComponent},
   {path: 'login', component: LoginComponent},
@@ -70,6 +72,7 @@ const oktaAuth = new OktaAuth(oktaConfig);
     LoginComponent,
     AuthStatusComponent,
     MembersPageComponent,
+    OrderHistoryComponent,
   ],
   imports: [
     RouterModule.forRoot(routes),

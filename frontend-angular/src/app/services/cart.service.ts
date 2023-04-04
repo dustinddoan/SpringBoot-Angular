@@ -61,6 +61,13 @@ export class CartService {
     return this.cartItems;
   }
 
+  resetCart() {
+    console.log('resetCart')
+    this.cartItems = [];
+    this.totalPrice.next(0);
+    this.totalQuantity.next(0);
+  }
+
   persistCartItems() {
     console.log('persistCartItems');
     // console.log('persistCartItems' + JSON.stringify(this.cartItems));

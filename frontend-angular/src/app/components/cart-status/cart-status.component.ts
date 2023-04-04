@@ -26,6 +26,7 @@ export class CartStatusComponent {
     this.updateCarts();
   }
   updateCarts() {
+    console.log('carts', this.cartService.cartItems);
     this.cartService.computeCartTotal();
 
     this.cartService.totalQuantity.subscribe(data => {
