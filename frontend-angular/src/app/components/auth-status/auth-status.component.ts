@@ -2,7 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { concatMap, map, tap } from 'rxjs/operators';
+import { AuthenticateService } from 'src/app/services/authenticate.service';
 import { CartService } from 'src/app/services/cart.service';
+import { environment } from 'src/environments/environment.development';
 
 @Component({
   selector: 'app-auth-status',
@@ -15,12 +17,14 @@ export class AuthStatusComponent {
   userEmail: string = '';
   storage: Storage = sessionStorage;
   accessToken: string = '';
-  baseURL = "https://openmarket.us.auth0.com/api/v2/users/"
+  userId: any;
+  baseURL = 'https://openmarket.us.auth0.com/api/v2/users/';
   userInfo: any = {};
   constructor(
     public auth: AuthService,
     private cartService: CartService,
-    private http: HttpClient
+    private http: HttpClient,
+    private authenticateService: AuthenticateService
   ) {
     let isAuth = JSON.parse(this.storage.getItem('auth')!);
     let email = JSON.parse(this.storage.getItem('email')!);
@@ -38,44 +42,34 @@ export class AuthStatusComponent {
     this.auth.isAuthenticated$.subscribe((result) => {
       this.isAuthenticated = result;
 
-      this.auth.user$.subscribe((user) => {
-        console.log('user', user);
+      this.authenticateService.getUserId().subscribe((user) => {
+        this.userId = user!.sub;
 
-        this.baseURL +=  user!.sub;
-        this.auth
-          .getAccessTokenSilently()
-          .subscribe((token) => {
-            this.accessToken = token;
+        this.authenticateService.getAccessToken().subscribe((token) => {
+          this.accessToken = token;
 
-            this.getUserInfo();
-          });
-
-
+          this.getUserInfo();
+        });
       });
     });
   }
-
   getUserInfo() {
-    console.log('getUserInfo baseurl:' + this.baseURL);
-    this.http.get(this.baseURL,
-      {headers: {
-        'Authorization': 'Bearer ' + this.accessToken,
-        'Content-Type':'application/json'}
-      }).subscribe(user => {
-      console.log('data user', user);
-      this.userInfo = user;
-      this.userFullName = this.userInfo.name;
-      this.userEmail = this.userInfo.email;
+    this.authenticateService
+      .getUserInfo(this.userId, this.accessToken)
+      .subscribe((user) => {
+        this.userInfo = user;
+        console.log('user info: ', this.userInfo);
+        this.userFullName = this.userInfo.name;
+        this.userEmail = this.userInfo.email;
 
-      this.storage.setItem('auth', JSON.stringify(this.isAuthenticated));
-      this.storage.setItem('email', JSON.stringify(this.userEmail));
-      this.storage.setItem('name', JSON.stringify(this.userFullName));
-      this.storage.setItem('token', JSON.stringify(this.accessToken));
-
-    })
+        this.storage.setItem('auth', JSON.stringify(this.isAuthenticated));
+        this.storage.setItem('email', JSON.stringify(this.userEmail));
+        this.storage.setItem('name', JSON.stringify(this.userFullName));
+        this.storage.setItem('token', JSON.stringify(this.accessToken));
+      });
   }
-  // https://openmarket.us.auth0.com/api/v2/users/auth0|6425f19067f2e6ad3c72dbeb
 
+  // https://openmarket.us.auth0.com/api/v2/users/auth0|6425f19067f2e6ad3c72dbeb
 
   logIn() {
     this.auth.loginWithRedirect();

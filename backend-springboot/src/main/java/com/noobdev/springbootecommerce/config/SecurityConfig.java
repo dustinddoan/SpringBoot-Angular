@@ -28,6 +28,7 @@ public class SecurityConfig {
         .requestMatchers("/api/products/**").permitAll()
         .requestMatchers("/api/product-category").permitAll()
         .requestMatchers("/api/orders/**").authenticated()
+        .requestMatchers("/api/checkout/**").authenticated()
         .and().cors()
         .and().oauth2ResourceServer().jwt();
 
