@@ -1,0 +1,12 @@
+debug: true
+server:
+  port: 8080
+
+auth0:
+  audience: https://openmarket.us.auth0.com/api/v2/
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://openmarket.us.auth0.com/

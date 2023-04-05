@@ -10,6 +10,7 @@ import { map } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class OrderServiceService {
+  storage: Storage = sessionStorage;
   private orderUrl =
     'http://localhost:8080/api/orders/search/findByCustomerEmailOrderByDateCreatedDesc?email=';
 
@@ -19,8 +20,12 @@ export class OrderServiceService {
   }
 
   getOrdersHistory(email: string): Observable<GetResponseOrderHistory> {
+    const token = JSON.parse(this.storage.getItem('token')!);
+    console.log('token get order: ' + token);
     const searchUrl = this.orderUrl + email;
-    return this.httpClient.get<GetResponseOrderHistory>(searchUrl)
+    return this.httpClient.get<GetResponseOrderHistory>(searchUrl, {
+      headers: { 'Authorization': 'Bearer ' + token}
+    })
   }
 }
 

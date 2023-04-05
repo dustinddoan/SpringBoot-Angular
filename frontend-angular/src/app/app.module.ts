@@ -19,6 +19,12 @@ import { CartService } from './services/cart.service';
 import { LoginComponent } from './components/login/login.component';
 import { AuthStatusComponent } from './components/auth-status/auth-status.component';
 
+// Import the injector module and the HTTP client module from Angular
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+
+// Import the HTTP interceptor from the Auth0 Angular SDK
+import { AuthHttpInterceptor } from '@auth0/auth0-angular';
+
 
 import {
   OktaAuthGuard,
@@ -33,12 +39,15 @@ import { MembersPageComponent } from './components/members-page/members-page.com
 import { OrderHistoryComponent } from './components/order-history/order-history.component';
 
 const authModuleConfig = {
+  // The domain and clientId were configured in the previous chapter
   domain: 'openmarket.us.auth0.com',
-  clientId: 'YU9vhZammk5U5I6l0FdCHLCo05JPFw0r',
+  clientId: 'ghNyYJ7hXX9yuZoSU1vy6flmlDBH4GJz',
   authorizationParams: {
     redirect_uri: window.location.origin,
-  }
-}
+    audience: "https://openmarket.us.auth0.com/api/v2/",
+    scope: "read:current_user update:current_user_metadata"
+  },
+};
 
 const routes: Routes = [
   {path: 'order-history', component: OrderHistoryComponent, canActivate: [AuthGuard]},
@@ -83,7 +92,11 @@ const oktaAuth = new OktaAuth(oktaConfig);
     OktaAuthModule,
     AuthModule.forRoot(authModuleConfig)
   ],
-  providers: [ProductService, CartService, {provide: OKTA_CONFIG, useValue: {oktaAuth}}],
+  providers: [
+    ProductService,
+    CartService,
+    {provide: OKTA_CONFIG, useValue: {oktaAuth}},
+    { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

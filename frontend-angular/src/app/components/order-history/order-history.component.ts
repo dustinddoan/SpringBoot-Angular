@@ -10,12 +10,13 @@ import { OrderServiceService } from 'src/app/services/order-service.service';
 export class OrderHistoryComponent {
   customerEmail: string = '';
   storage: Storage = sessionStorage;
-
+  token: string = '';
   constructor(private orderService: OrderServiceService) {
 
     // if (this.customerEmail != null) {
     //   this.getOrdersHistory(this.customerEmail);
     // }
+
   }
   ordersHistory: OrderHistory[] = [];
 
